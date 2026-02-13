@@ -22,6 +22,8 @@ Women in rural areas lack reliable emergency communication due to poor internet 
 
 ### The Solution
 We solve this problem by developing Rakshak 1.0, a wearable, offline women safety system that uses long-range LoRa communication instead of internet-based networks. The device integrates an ESP32 microcontroller, GPS module, accelerometer, panic button, and cancel mechanism to detect emergencies either manually or automatically through fall detection. Upon activation, it transmits real-time latitude, longitude, device ID, and alert type directly to a LoRa receiver installed at a police station within a 5–10 km range. The receiver system processes the data using a Python-based interface and displays the exact location on a digital map, enabling authorities to respond quickly even in network-deficient rural environments.
+![Workflow](Images/workflow.png)
+![Architecture](Images/Architecture.png)
 
 ## Technical Details
 
@@ -65,10 +67,17 @@ List the key features of your project:
 ### For Hardware:
 
 #### Components Required
-[List all components needed with specifications]
+>ESP32 Microcontroller
+>LoRa Module (433 MHz)
+>GPS Module (NEO 6M)
+>Accelerometer (Fall Detection Sensor)
+>OLED Display
+>Push buttons
+>LoRa Antenna
+>Connecting Wires
 
 #### Circuit Setup
-[Explain how to set up the circuit]
+The transmitter circuit is built around the ESP32 microcontroller, where the LoRa module is connected via SPI communication pins, the GPS module through UART, and the accelerometer and OLED display through I2C interface. Panic and cancel buttons are connected to digital GPIO pins with pull-up configuration for emergency triggering. The receiver side uses another ESP32 interfaced with a LoRa module via SPI and connected to a computer through USB for data visualization.
 
 ---
 
@@ -91,8 +100,7 @@ List the key features of your project:
 
 **System Architecture:**
 
-![Architecture Diagram](docs/architecture.png)
-*Explain your system architecture - components, data flow, tech stack interaction*
+![Architecture Diagram](docs/Workflow.png)
 
 **Application Workflow:**
 
