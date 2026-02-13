@@ -29,8 +29,8 @@ while True:
         device_id = parts[0].replace("id:", "")
         event = parts[1]
 
-        DEFAULT_LAT = "10.766733"
-        DEFAULT_LON = "76.621757"
+        DEFAULT_LAT = "10.8238"
+        DEFAULT_LON = "76.6426"
 
         if parts[2] == "NO_GPS":
             print("⚠ GPS not available — using default location")
