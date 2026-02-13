@@ -12,7 +12,6 @@ void setup() {
   LoRa.setPins(SS, RST, DIO0);
 
   if (!LoRa.begin(433E6)) {
-    Serial.println("RX failed");
     while (1);
   }
 
@@ -21,18 +20,26 @@ void setup() {
   LoRa.setCodingRate4(5);
   LoRa.setSyncWord(0x12);
 
+  LoRa.receive();
+
   Serial.println("RX Ready");
 }
 
 void loop() {
+
   int packetSize = LoRa.parsePacket();
+
   if (packetSize) {
-    Serial.print("Received: ");
+
+    String receivedData = "";
+
     while (LoRa.available()) {
-      Serial.print((char)LoRa.read());
+      receivedData += (char)LoRa.read();
     }
-    Serial.print(" | RSSI: ");
-    Serial.println(LoRa.packetRssi());
+
+    // Send ONLY the actual message to Python
+    Serial.println(receivedData);
+
+    LoRa.receive();   // re-arm receiver
   }
 }
-
