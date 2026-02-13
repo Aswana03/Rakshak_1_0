@@ -28,6 +28,13 @@ HardwareSerial gpsSerial(2);
 #define PIN_Y 33
 #define PIN_Z 34
 
+// ===================== BUTTON =====================
+#define CANCEL_BUTTON 25
+#define PANIC_BUTTON 4
+
+#define EVENT_FALL  "F01"
+#define EVENT_PANIC "P01"
+
 // ===================== CONSTANTS =====================
 const float VCC = 3.3;
 const float ADC_MAX = 4095.0;
@@ -43,6 +50,9 @@ float vZeroX, vZeroY, vZeroZ;
 unsigned long freefallStart = 0;
 bool inFreefall = false;
 bool fallReported = false;
+
+unsigned long alertTime = 0;
+bool alertActive = false;
 
 // ===================== OLED HELPERS =====================
 void showCenteredText(const char* msg, uint8_t size) {
@@ -60,15 +70,118 @@ void showCenteredText(const char* msg, uint8_t size) {
   display.display();
 }
 
+bool showCountdownWithCancel(int seconds) {
+  for (int i = seconds; i > 0; i--) {
+
+    // ---- CHECK BUTTON ----
+    if (digitalRead(CANCEL_BUTTON) == LOW) {
+      showCenteredText("CANCELLED", 1);
+      delay(1000);
+      showCenteredText("SAFE", 2);
+      return false;   // cancelled
+    }
+
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(20, 10);
+    display.print("Sending in");
+    display.setCursor(45, 30);
+    display.print(i);
+    display.display();
+
+    delay(1000);
+  }
+  return true; // countdown completed
+}
+
+
+void showMessageSent() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(5, 15);
+  display.println("MESSAGE");
+  display.setCursor(30, 30);
+  display.println("SENT");
+  display.display();
+}
+
+void showStartupAnimation() {
+
+  unsigned long startTime = millis();
+
+  int barX = 38;
+  int barY = 20;
+  int barLength = 8;
+
+  // ===== 5 SECONDS LOADING BAR =====
+  while (millis() - startTime < 5000) {
+
+    for (int i = 0; i <= barLength; i++) {
+
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+
+      display.setCursor(barX - 6, barY);
+      display.print("[");
+
+      for (int j = 0; j < barLength; j++) {
+        if (j < i) display.print((char)219);
+        else display.print(" ");
+      }
+
+      display.print("]");
+
+      display.display();
+      delay(150);
+
+      if (millis() - startTime >= 5000) break;
+    }
+  }
+
+  // ===== SHOW RAKSHAK 1.0 AFTER LOADING =====
+  display.clearDisplay();
+  display.setTextSize(1.8);
+  display.setTextColor(SSD1306_WHITE);
+
+  const char* text = "RAKSHAK 1.0";
+
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
+
+  display.setCursor(
+    (SCREEN_WIDTH - w) / 2,
+    (SCREEN_HEIGHT - h) / 2
+  );
+
+  display.print(text);
+  display.display();
+
+  delay(5000);   // show title for 5 seconds
+
+  display.clearDisplay();
+  display.display();
+}
+
 // ===================== SETUP =====================
 void setup() {
   Serial.begin(115200);
   delay(2000);
 
+  pinMode(CANCEL_BUTTON, INPUT_PULLUP);
+  pinMode(PANIC_BUTTON, INPUT_PULLUP);
+
   // ---------- OLED ----------
   Wire.begin(21, 22);
   display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
-  showCenteredText("SAFE", 2);
+
+  showStartupAnimation();     // 🎬 animated RAKSHAK 1.0
+  showCenteredText("SAFE", 2);  // 🎬 moving RAKSHAK 1.0
+
+
 
   // ---------- ADC ----------
   analogReadResolution(12);
@@ -111,6 +224,20 @@ void loop() {
   float magnitude = sqrt(gx * gx + gy * gy + gz * gz);
   unsigned long now = millis();
 
+  // -------- PANIC BUTTON (INSTANT ALERT) --------
+  if (digitalRead(PANIC_BUTTON) == LOW) {
+    showCenteredText("PANIC!", 2);
+    sendHelpWithGPS(EVENT_PANIC);
+    showMessageSent();
+    alertTime = millis();
+    alertActive = true;
+
+
+    // prevent multiple sends on long press
+    delay(2000);
+  }
+
+
   // -------- FALL DETECTION --------
   if (magnitude < FREEFALL_THRESHOLD_G) {
     if (!inFreefall) {
@@ -121,10 +248,23 @@ void loop() {
   else {
     if (inFreefall && (now - freefallStart >= FREEFALL_MIN_MS)) {
       if (waitForImpact()) {
-        showCenteredText("FALL!", 2);
-        sendHelpWithGPS();
-        fallReported = true;
-      }
+    showCenteredText("FALL!", 2);
+
+    // 10-second delay with countdown
+   bool proceed = showCountdownWithCancel(10);
+
+    if (proceed) {
+      sendHelpWithGPS(EVENT_FALL);
+      showMessageSent();
+      fallReported = true;
+      alertTime = millis();
+      alertActive = true;
+    } else {
+      fallReported = false;
+    }
+
+  }
+
       inFreefall = false;
     }
   }
@@ -136,6 +276,14 @@ void loop() {
   }
 
   delay(5);
+
+    // -------- AUTO RETURN TO SAFE AFTER 10 SECONDS --------
+  if (alertActive && millis() - alertTime >= 10000) {
+    alertActive = false;
+    fallReported = false;
+    showCenteredText("SAFE", 2);
+  }
+
 }
 
 // ===================== FUNCTIONS =====================
@@ -177,16 +325,18 @@ bool waitForImpact() {
 }
 
 // ===================== LORA + GPS MESSAGE =====================
-void sendHelpWithGPS() {
+void sendHelpWithGPS(const char* eventCode) {
 
-  String message = "";
+  String message = "id:123,";
+  message += eventCode;
+  message += ",";
 
   if (gps.location.isValid()) {
-    message = String(gps.location.lat(), 2);
+    message += String(gps.location.lat(), 6);
     message += ",";
-    message += String(gps.location.lng(), 2);
+    message += String(gps.location.lng(), 6);
   } else {
-    message = "NO_GPS";
+    message += "NO_GPS";
   }
 
   LoRa.setPreambleLength(12);
