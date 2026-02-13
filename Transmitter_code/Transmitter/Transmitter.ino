@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <TinyGPSPlus.h>
 #include <math.h>
 
 // ===================== OLED =====================
@@ -15,6 +16,12 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define LORA_SS    5
 #define LORA_RST   27
 #define LORA_DIO0  26
+
+// ===================== GPS =====================
+#define GPS_RX 16   // ESP32 RX ← GPS TX
+#define GPS_TX 17   // ESP32 TX → GPS RX
+TinyGPSPlus gps;
+HardwareSerial gpsSerial(2);
 
 // ===================== ADXL335 =====================
 #define PIN_X 32
@@ -37,22 +44,19 @@ unsigned long freefallStart = 0;
 bool inFreefall = false;
 bool fallReported = false;
 
-// ===================== OLED FUNCTIONS =====================
-void showSafe() {
+// ===================== OLED HELPERS =====================
+void showCenteredText(const char* msg, uint8_t size) {
   display.clearDisplay();
-  display.setTextSize(2);
+  display.setTextSize(size);
   display.setTextColor(SSD1306_WHITE);
-  display.setCursor(25, 25);
-  display.println("SAFE");
-  display.display();
-}
 
-void showFall() {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(15, 20);
-  display.println("FALL DETECTED");
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(msg, 0, 0, &x1, &y1, &w, &h);
+
+  display.setCursor((SCREEN_WIDTH - w) / 2,
+                    (SCREEN_HEIGHT - h) / 2);
+  display.println(msg);
   display.display();
 }
 
@@ -61,21 +65,18 @@ void setup() {
   Serial.begin(115200);
   delay(2000);
 
-  // ---------- OLED INIT ----------
+  // ---------- OLED ----------
   Wire.begin(21, 22);
-  if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
-    Serial.println("OLED not found");
-    while (1);
-  }
-  showSafe();
+  display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
+  showCenteredText("SAFE", 2);
 
   // ---------- ADC ----------
   analogReadResolution(12);
   analogSetAttenuation(ADC_11db);
-
-  Serial.println("Calibrating ADXL335...");
   calibrateSensor();
-  Serial.println("Calibration done");
+
+  // ---------- GPS ----------
+  gpsSerial.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
 
   // ---------- LoRa ----------
   pinMode(LORA_SS, OUTPUT);
@@ -85,7 +86,6 @@ void setup() {
   LoRa.setPins(LORA_SS, LORA_RST, LORA_DIO0);
 
   if (!LoRa.begin(433E6)) {
-    Serial.println("LoRa init failed");
     while (1);
   }
 
@@ -94,12 +94,15 @@ void setup() {
   LoRa.setCodingRate4(5);
   LoRa.setSyncWord(0x12);
   LoRa.setTxPower(17);
-
-  Serial.println("System Ready");
 }
 
 // ===================== LOOP =====================
 void loop() {
+
+  // -------- GPS PARSING (NON-BLOCKING) --------
+  while (gpsSerial.available()) {
+    gps.encode(gpsSerial.read());
+  }
 
   float gx = readAxisG(PIN_X);
   float gy = readAxisG(PIN_Y);
@@ -108,7 +111,7 @@ void loop() {
   float magnitude = sqrt(gx * gx + gy * gy + gz * gz);
   unsigned long now = millis();
 
-  // -------- FREE FALL DETECTION --------
+  // -------- FALL DETECTION --------
   if (magnitude < FREEFALL_THRESHOLD_G) {
     if (!inFreefall) {
       inFreefall = true;
@@ -118,9 +121,8 @@ void loop() {
   else {
     if (inFreefall && (now - freefallStart >= FREEFALL_MIN_MS)) {
       if (waitForImpact()) {
-        Serial.println("🚨 FALL DETECTED");
-        showFall();
-        sendLoRaFallAlert();
+        showCenteredText("FALL!", 2);
+        sendHelpWithGPS();
         fallReported = true;
       }
       inFreefall = false;
@@ -130,7 +132,7 @@ void loop() {
   // -------- RESET TO SAFE --------
   if (fallReported && magnitude > 0.9 && magnitude < 1.2) {
     fallReported = false;
-    showSafe();
+    showCenteredText("SAFE", 2);
   }
 
   delay(5);
@@ -174,15 +176,28 @@ bool waitForImpact() {
   return false;
 }
 
-void sendLoRaFallAlert() {
+// ===================== LORA + GPS MESSAGE =====================
+void sendHelpWithGPS() {
+
+  String message = "";
+
+  if (gps.location.isValid()) {
+    message = String(gps.location.lat(), 2);
+    message += ",";
+    message += String(gps.location.lng(), 2);
+  } else {
+    message = "NO_GPS";
+  }
+
   LoRa.setPreambleLength(12);
   LoRa.enableCrc();
 
   for (int i = 0; i < 5; i++) {
     LoRa.beginPacket();
-    LoRa.print("FALL DETECTED");
+    LoRa.print(message);
     LoRa.endPacket(true);
     delay(200);
   }
-  Serial.println("📡 LoRa alert sent");
+
+  Serial.println(message);
 }
