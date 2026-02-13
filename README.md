@@ -2,56 +2,51 @@
   <img src="./img.png" alt="Project Banner" width="100%">
 </p>
 
-# [Project Name] 🎯
+# RAKSHAK-1.0🎯
 
 ## Basic Details
 
-### Team Name: [Name]
+### Team Name: META MAKERS
 
 ### Team Members
-- Member 1: [Name] - [College]
-- Member 2: [Name] - [College]
+- Member 1: Aswana N - NSS COLLEGE OF ENGINEERING , PALAKKAD
 
 ### Hosted Project Link
 [mention your project hosted link here]
 
 ### Project Description
-[2-3 lines about what your project does]
+Rakshak 1.0 is a LoRa-based women safety system designed for rural areas that works without internet connectivity. It instantly transmits emergency alerts with live GPS location through panic activation or automatic fall detection to nearby police stations for rapid response.
 
 ### The Problem statement
-[What problem are you solving?]
+Women in rural areas lack reliable emergency communication due to poor internet connectivity, making existing safety solutions ineffective during critical situations.
 
 ### The Solution
-[How are you solving it?]
-
----
+We solve this problem by developing Rakshak 1.0, a wearable, offline women safety system that uses long-range LoRa communication instead of internet-based networks. The device integrates an ESP32 microcontroller, GPS module, accelerometer, panic button, and cancel mechanism to detect emergencies either manually or automatically through fall detection. Upon activation, it transmits real-time latitude, longitude, device ID, and alert type directly to a LoRa receiver installed at a police station within a 5–10 km range. The receiver system processes the data using a Python-based interface and displays the exact location on a digital map, enabling authorities to respond quickly even in network-deficient rural environments.
 
 ## Technical Details
 
 ### Technologies/Components Used
 
 **For Software:**
-- Languages used: [e.g., JavaScript, Python, Java]
-- Frameworks used: [e.g., React, Django, Spring Boot]
-- Libraries used: [e.g., axios, pandas, JUnit]
-- Tools used: [e.g., VS Code, Git, Docker]
+- Languages used: Python
+- Frameworks used: None
+- Libraries used: Pyserial,Requests,Plyer
+- Tools used: Python,Notepad,Web browser
 
 **For Hardware:**
-- Main components: [List main components]
-- Specifications: [Technical specifications]
-- Tools required: [List tools needed]
+- Main components: ESP 32,NEO 6M GPS Module,RA-02 LoRa Module,OLED Display,ADXL335 Accelerometer
+- Tools required: USB Cable,Breadboard,Jumper wires/Single strand wires,PC etc....
 
 ---
 
 ## Features
 
 List the key features of your project:
-- Feature 1: [Description]
-- Feature 2: [Description]
-- Feature 3: [Description]
-- Feature 4: [Description]
+- Feature 1: Internet-Independent Long-Range Communication.
+- Feature 2: Real-Time Panic and Fall Detection.
+- Feature 3: Unique Device ID-Based User Identification.
+- Feature 4: Offline Monitoring and Alert System.
 
----
 
 ## Implementation
 
@@ -59,7 +54,7 @@ List the key features of your project:
 
 #### Installation
 ```bash
-[Installation commands - e.g., npm install, pip install -r requirements.txt]
+[Installation commands - pip install pyserial plyer requests]
 ```
 
 #### Run
