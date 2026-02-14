@@ -132,7 +132,7 @@ Displays the receiver-side ESP32 connected to the RA-02 LoRa module and antenna,
 ![Build1](Images/Transmitter.jpeg)
 Shows the complete transmitter-side hardware setup on a breadboard, integrating the ESP32 microcontroller with the NEO-6M GPS module, RA-02 LoRa transceiver with external antenna, OLED display for status output, and interconnecting jumper wires for real-time emergency data transmission.
 
-![Final](Images/Comb.jpeg)
+![Final](Images/Comb1.jpeg)
 Shows the complete Rakshak 1.0 women safety system operating in real time, with the transmitter unit capturing GPS data and emergency events, the receiver unit receiving LoRa alerts, and the Python monitoring application simultaneously displaying processed emergency data and live location on OpenStreetMap along with instant desktop notifications.
 
 ---
@@ -225,16 +225,20 @@ xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug
 
 #### Bill of Materials (BOM)
 
-| Component | Quantity | Specifications | Price | Link/Source |
-|-----------|----------|----------------|-------|-------------|
-| Arduino Uno | 1 | ATmega328P, 16MHz | ₹450 | [Link] |
-| LED | 5 | Red, 5mm, 20mA | ₹5 each | [Link] |
-| Resistor | 5 | 220Ω, 1/4W | ₹1 each | [Link] |
-| Breadboard | 1 | 830 points | ₹100 | [Link] |
-| Jumper Wires | 20 | Male-to-Male | ₹50 | [Link] |
-| [Add more...] | | | | |
+| Component               | Quantity | Specifications                       | Price (Approx) | Link/Source |
+| ----------------------- | -------- | ------------------------------------ | -------------- | ----------- |
+| ESP32 Development Board | 2        | Dual-core 32-bit MCU, WiFi/Bluetooth | ₹600 each      | [Link]      |
+| RA-02 LoRa Module       | 2        | 433 MHz long-range transceiver       | ₹450 each      | [Link]      |
+| NEO-6M GPS Module       | 1        | UART GPS receiver with antenna       | ₹750           | [Link]      |
+| OLED Display            | 1        | 0.96”, 128×64, I2C                   | ₹250           | [Link]      |
+| ADXL335 Accelerometer   | 1        | 3-axis analog sensor                 | ₹300           | [Link]      |
+| Breadboard              | 2        | 830 tie-points                       | ₹120 each      | [Link]      |
+| Jumper Wires/Single strand wires          | 1 set    | Male-to-male                         | ₹100           | [Link]      |
+| External LoRa Antenna   | 2        | SMA connector                        | ₹150 each      | [Link]      |
+| USB Cable               | 2        | Micro USB                            | ₹80 each       | [Link]      |
 
-**Total Estimated Cost:** ₹[Amount]
+
+Total Estimated Cost: ₹3,800 – ₹4,200 (approx.)
 
 #### Assembly Instructions
 
@@ -380,19 +384,21 @@ python script.py -v --format json data.json
 
 If you used AI tools during development, document them here for transparency:
 
-**Tool Used:** [e.g., GitHub Copilot, v0.dev, Cursor, ChatGPT, Claude]
+**Tool Used:** ChatGPT
 
 **Purpose:** [What you used it for]
-- Example: "Generated boilerplate React components"
-- Example: "Debugging assistance for async functions"
-- Example: "Code review and optimization suggestions"
+1. Debugging ESP32 and Python serial communication issues
+2. Improving code structure and error handling
+3. Generating documentation content (README, technical descriptions, BOM formatting)
+4. Assisting in reverse geocoding integration logic
 
 **Key Prompts Used:**
-- "Create a REST API endpoint for user authentication"
-- "Debug this async function that's causing race conditions"
-- "Optimize this database query for better performance"
+1. “Fix serial decoding errors in Python for ESP32 communication”
+2. “Modify LoRa receiver code to output clean serial data”
+3. “Explain GPS fallback handling in monitoring software”
+4. “Format Bill of Materials for hardware project README”
 
-**Percentage of AI-generated code:** [Approximately X%]
+**Percentage of AI-generated code:** Approximately 35–40%
 
 **Human Contributions:**
 - Architecture design and planning
