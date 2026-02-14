@@ -4,7 +4,7 @@ import webbrowser
 import requests
 from plyer import notification
 
-ser = serial.Serial('COM13', 115200)   # CHANGE COM PORT
+ser = serial.Serial('COM5', 115200)   # CHANGE COM PORT
 last_message = ""
 
 def get_owner(device_id):
