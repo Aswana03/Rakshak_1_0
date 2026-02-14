@@ -12,7 +12,8 @@
 - Member 1: Aswana N - NSS COLLEGE OF ENGINEERING , PALAKKAD
 
 ### Hosted Project Link
-[mention your project hosted link here]
+1.https://drive.google.com/file/d/1A8QwXHA24_kf9ueLwoiRuupRxyYLmEjs/view?usp=drivesdk
+2.https://drive.google.com/file/d/1H0Yil8FEZiCKtIFs6si4XcBkV7o9oqfa/view?usp=drivesdk
 
 ### Project Description
 Rakshak 1.0 is a LoRa-based women safety system designed for rural areas that works without internet connectivity. It instantly transmits emergency alerts with live GPS location through panic activation or automatic fall detection to nearby police stations for rapid response.
@@ -371,12 +372,26 @@ python script.py -v --format json data.json
 ## Project Demo
 
 ### Video
-[Add your demo video link here - YouTube, Google Drive, etc.]
+https://drive.google.com/file/d/1A8QwXHA24_kf9ueLwoiRuupRxyYLmEjs/view?usp=drivesdk
 
-*Explain what the video demonstrates - key features, user flow, technical highlights*
+This video demonstrates the basic working of the Rakshak 1.0 women safety system using the panic button mechanism. When the user presses the panic button, the ESP32 captures the emergency event, retrieves real-time GPS coordinates, and transmits the alert through the LoRa communication module. The receiver unit forwards the data to the Python monitoring system, which identifies the user through device ID mapping, displays the emergency location on a live map, and triggers an instant desktop notification for rapid response.
+
+Key Highlights:
+• Instant panic-triggered emergency transmission
+• Real-time GPS location visualization
+• User identification using device ID
+• Live alert notification system
+
 
 ### Additional Demos
-[Add any extra demo materials/links - Live site, APK download, online demo, etc.]
+https://drive.google.com/file/d/1H0Yil8FEZiCKtIFs6si4XcBkV7o9oqfa/view?usp=drivesdk
+This video demonstrates the advanced safety features of Rakshak 1.0, focusing on accelerometer-based fall detection and intelligent event code handling. The ADXL335 sensor continuously monitors motion patterns to detect free fall and impact conditions. Upon detecting a fall, the system generates a dedicated event code and transmits it via LoRa along with GPS data. The monitoring software interprets the event type, identifies the user, processes location information, and generates an emergency alert accordingly.
+
+Key Highlights:
+• Automatic fall detection using motion sensing
+• Event-based emergency classification (panic vs fall)
+• Reliable long-range LoRa communication
+• Smart alert processing and monitoring
 
 ---
 
