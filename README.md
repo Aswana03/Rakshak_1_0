@@ -12,8 +12,8 @@
 - Member 1: Aswana N - NSS COLLEGE OF ENGINEERING , PALAKKAD
 
 ### Hosted Project Link
-1.https://drive.google.com/file/d/1A8QwXHA24_kf9ueLwoiRuupRxyYLmEjs/view?usp=drivesdk
-2.https://drive.google.com/file/d/1H0Yil8FEZiCKtIFs6si4XcBkV7o9oqfa/view?usp=drivesdk
+1. https://drive.google.com/file/d/1A8QwXHA24_kf9ueLwoiRuupRxyYLmEjs/view?usp=drivesdk <br>
+2. https://drive.google.com/file/d/1H0Yil8FEZiCKtIFs6si4XcBkV7o9oqfa/view?usp=drivesdk
 
 ### Project Description
 Rakshak 1.0 is a LoRa-based women safety system designed for rural areas that works without internet connectivity. It instantly transmits emergency alerts with live GPS location through panic activation or automatic fall detection to nearby police stations for rapid response.
@@ -22,7 +22,7 @@ Rakshak 1.0 is a LoRa-based women safety system designed for rural areas that wo
 Women in rural areas lack reliable emergency communication due to poor internet connectivity, making existing safety solutions ineffective during critical situations.
 
 ### The Solution
-We solve this problem by developing Rakshak 1.0, a wearable, offline women safety system that uses long-range LoRa communication instead of internet-based networks. The device integrates an ESP32 microcontroller, GPS module, accelerometer, panic button, and cancel mechanism to detect emergencies either manually or automatically through fall detection. Upon activation, it transmits real-time latitude, longitude, device ID, and alert type directly to a LoRa receiver installed at a police station within a 5–10 km range. The receiver system processes the data using a Python-based interface and displays the exact location on a digital map, enabling authorities to respond quickly even in network-deficient rural environments.
+We solve this problem by developing Rakshak 1.0, a wearable, offline women safety system that uses long-range, low-power LoRa communication instead of internet-based networks. LoRa technology enables reliable transmission over 5–10 km while consuming minimal power, making the device suitable for battery-operated wearable applications. The system integrates an ESP32 microcontroller, GPS module, accelerometer, panic button, and cancel mechanism to detect emergencies either manually or automatically through fall detection. Upon activation, it transmits real-time latitude, longitude, device ID, and alert type directly to a LoRa receiver installed at a police station. The receiver system processes the data using a Python-based monitoring interface and displays the exact location on a digital map, enabling authorities to respond quickly even in network-deficient rural environments.
 ![Architecture](Images/Architecture.png)
 
 ## Technical Details
