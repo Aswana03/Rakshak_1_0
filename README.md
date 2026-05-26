@@ -115,7 +115,7 @@ Displays the receiver-side ESP32 connected to the RA-02 LoRa module and antenna,
 ![Build1](Images/Transmitter.jpeg)
 Shows the complete transmitter-side hardware setup on a breadboard, integrating the ESP32 microcontroller with the NEO-6M GPS module, RA-02 LoRa transceiver with external antenna, OLED display for status output, and interconnecting jumper wires for real-time emergency data transmission.
 
-![Final](Images/Comb1.jpeg)
+![Final](Images/Comb1.png)
 Shows the complete Rakshak 1.0 women safety system operating in real time, with the transmitter unit capturing GPS data and emergency events, the receiver unit receiving LoRa alerts, and the Python monitoring application simultaneously displaying processed emergency data and live location on OpenStreetMap along with instant desktop notifications.
 
 
